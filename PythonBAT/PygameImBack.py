@@ -6,68 +6,469 @@ import time    # To control execution times and waiting periods
 import threading # For the implementation and control of the animation threads
 sys.setrecursionlimit(10**9) # Increased recursion limit
 from Player import Player
+from Power import Power
+import socket
+import threading
 
 ### MAIN FUNCTION OF THE GAME (GAMEPLAY) ###
 pygame.init()
 
 def main():
+
+	def Conexion():
+		HOST = "localhost"
+		PORT = 5555
+		with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+		    s.connect((HOST,PORT))
+		    s.sendall(b"Hola mundooo")
+		    data = s.recv(1024)
+		print ("Recibido ",repr(data))
+
 	VentanaJuego =  pygame.display.set_mode([600,630])
 	Mapa_Image = pygame.image.load("ImagenesBat/MapaBAT.png").convert()
-	FemSound = pygame.mixer.Sound("SonidosBAT/FemAtSoundBAT.wav")
+	
+	ShieldIm = pygame.image.load("ImagenesBat/ShieldBAT.png")
+	
+	# JUGADOR 1 # ==========================================================================================================
 	Player1 = Player()
-	Player2 = Player()
+	#Conexion()
 	Player_Image = pygame.image.load(Player1.get_imagen())
-	Player1.mostrar()	
+	P = pygame.image.load("ImagenesBAT/EstrellaBAT.png")
+	Player1.mostrar()
+	Player1At = pygame.mixer.Sound(Player1.get_SonidoAtaque())
+	global IndicadorPoder
+	IndicadorPoder = [False]
+	global ContadorPoder
+	ContadorPoder = 0
+
+	# JUGADOR 2 # ==========================================================================================================
+	Player2 = Player()
+	#Conexion()
+	Player2_Image = pygame.image.load(Player2.get_imagen())
+	PP = pygame.image.load("ImagenesBAT/EstrellaBAT.png")
+	Player2.mostrar()
+	Player2At = pygame.mixer.Sound(Player2.get_SonidoAtaque())
+	global IndicadorPoder2
+	IndicadorPoder2 = [False]
+	global ContadorPoder2
+	ContadorPoder2 = 0
+
+	# ======================================================================================================================
+
+
+	PoderObtenido = pygame.mixer.Sound("SonidosBAT/EstrellaSoundBAT.mp3")
+
+	global Animation_Estrella
+	Animation_Estrella = [True]
+
 	#pygame.key.set_repeat(1, 1000)
 	while True:
 		
+		global PoderSaltoUsado
+		PoderSaltoUsado = [True]
+
+		global PoderSaltoUsado2
+		PoderSaltoUsado2 = [True]
+
+		def Retroceder(P1,P2):
+			Player_Image2 = pygame.image.load(Player2.get_imagen())
+			cont = 0
+			if Player1.get_PosX()<Player2.get_PosX():
+				Player2.RecibirAtaqueD()
+				Player2.ActualizarSprite()
+				Player_Image2 = pygame.image.load(Player2.get_imagen())
+				while cont<81:
+					P1+=10
+					cont+=10
+					VentanaJuego.blit(Player_Image2,(P1,P2))		
+					pygame.time.wait(20)
+			if Player1.get_PosX()>Player2.get_PosX():
+				Player2.RecibirAtaqueI()
+				Player2.ActualizarSprite()
+				Player_Image2 = pygame.image.load(Player2.get_imagen())
+				while cont<81:
+					P1-=10
+					cont+=10
+					VentanaJuego.blit(Player_Image2,(P1,P2))		
+					pygame.time.wait(20)		
+
+		def Retroceder2(P1,P2):
+			Player_Image2 = pygame.image.load(Player1.get_imagen())
+			cont = 0
+			if Player2.get_PosX()<Player1.get_PosX():
+				Player1.RecibirAtaqueD()
+				Player1.ActualizarSprite()
+				Player_Image2 = pygame.image.load(Player1.get_imagen())
+				while cont<81:
+					P1+=10
+					cont+=10
+					VentanaJuego.blit(Player_Image2,(P1,P2))		
+					pygame.time.wait(20)
+			if Player2.get_PosX()>Player1.get_PosX():
+				Player1.RecibirAtaqueI()
+				Player1.ActualizarSprite()
+				Player_Image2 = pygame.image.load(Player1.get_imagen())
+				while cont<81:
+					P1-=10
+					cont+=10
+					VentanaJuego.blit(Player_Image2,(P1,P2))		
+					pygame.time.wait(20)	
+
+		def Subida(P1,P2):
+			Player_Image2 = pygame.image.load(Player1.get_imagen())
+			cont = P2
+			while cont>129:
+				P2-=10
+				cont-=10
+				VentanaJuego.blit(Player_Image2,(P1,P2))		
+				pygame.time.wait(20)		
+			if P1 == 25: 	
+				Player1.set_PosY(129)
+				Player1.set_PosX(35)
+			else:
+				Player1.set_PosY(129)
+				Player1.set_PosX(505)
+
+		def Subida2(P1,P2):
+			Player2_Image2 = pygame.image.load(Player2.get_imagen())
+			cont = P2
+			while cont>129:
+				P2-=10
+				cont-=10
+				VentanaJuego.blit(Player2_Image2,(P1,P2))		
+				pygame.time.wait(20)		
+			if P1 == 25: 	
+				Player2.set_PosY(129)
+				Player2.set_PosX(35)
+			else:
+				Player2.set_PosY(129)
+				Player2.set_PosX(505)			
+		
+		def Caida(P1,P2,P3):
+			Player_Image2 = pygame.image.load(Player1.get_imagen())
+			cont = P2
+			while cont<630:
+				P2+=10
+				cont+=10
+				VentanaJuego.blit(Player_Image2,(P1,P2))		
+				pygame.time.wait(20)
+				if PoderSaltoUsado[0]==False:
+					cont=630
+			PoderSaltoUsado[0]=True				
+				
+			Player1.set_PosY(630)
+			if P3 == 25:
+				Player1.set_PosX(25)
+			else:
+				Player1.set_PosX(515)
+
+		def Caida2(P1,P2,P3):
+			Player2_Image2 = pygame.image.load(Player2.get_imagen())
+			cont = P2
+			while cont<630:
+				P2+=10
+				cont+=10
+				VentanaJuego.blit(Player2_Image2,(P1,P2))		
+				pygame.time.wait(20)
+				if PoderSaltoUsado2[0]==False:
+					cont=630
+			PoderSaltoUsado2[0]=True				
+				
+			Player2.set_PosY(630)
+			if P3 == 25:
+				Player2.set_PosX(25)
+			else:
+				Player2.set_PosX(515)			
 		
 		Tiempo = pygame.time.get_ticks()
+		#print(Tiempo//1000)
 		for event in pygame.event.get():
 			if event.type==pygame.QUIT:
 				pygame.quit()
 			if event.type == pygame.KEYDOWN:
-				
+				#===========================================IZQUIERDA==================================================	
 				if event.key == pygame.K_LEFT:
 					Player1.MoverIzquierda()
 					Player1.ActualizarSprite()
 					print(Player1.get_PosY())
 					Player_Image = pygame.image.load(Player1.get_imagen())
+					if Player1.get_PosY()==460 and Player1.get_PosX()<25:
+						P1=25
+						P2=Player1.get_PosY()
+						Player1.set_PosY(530)
+						Player1.set_PosX(-100)
+						P3 = Player1.get_PosX()
+
+						TCaida = threading.Thread(target = Caida,args=(P1,P2,P3))
+						TCaida.start()
+
+
 					if Player1.get_PosY()==352 and Player1.get_PosX()<190:
 						Player1.set_PosY(460)
-					#if Player1.get_PosY()==352 and Player1.get_PosX()<190:
-						#Player1.set_PosY(460)
+					
+					if Player1.get_PosY()==283 and Player1.get_PosX()<25:
+						P1=25
+						P2=Player1.get_PosY()
+						Player1.set_PosY(530)
+						Player1.set_PosX(-100)
+						P3 = Player1.get_PosX()
+
+						TCaida = threading.Thread(target = Caida,args=(P1,P2,P3))
+						TCaida.start()
+
 					if Player1.get_PosY()==213 and Player1.get_PosX()<195:
 						Player1.set_PosY(283)
-					#if Player1.get_PosY()==352 and Player1.get_PosX()<190:
-						#Player1.set_PosY(460)
+					
+					if Player1.get_PosY()==129 and Player1.get_PosX()<25:
+						P1=25
+						P2=Player1.get_PosY()
+						Player1.set_PosY(530)
+						Player1.set_PosX(-100)
+						P3 = Player1.get_PosX()
+
+						TCaida = threading.Thread(target = Caida,args=(P1,P2,P3))
+						TCaida.start()
+					
 					if Player1.get_PosY()==43 and Player1.get_PosX()<130:
-						Player1.set_PosY(129)								
-				
-				if event.key == pygame.K_RIGHT:					
+						Player1.set_PosY(129)
+
+
+
+				if event.key == pygame.K_a:
+					Player2.MoverIzquierda()
+					Player2.ActualizarSprite()
+					print(Player2.get_PosY())
+					Player2_Image = pygame.image.load(Player2.get_imagen())
+					if Player2.get_PosY()==460 and Player2.get_PosX()<25:
+						P1=25
+						P2=Player2.get_PosY()
+						Player2.set_PosY(530)
+						Player2.set_PosX(-100)
+						P3 = Player2.get_PosX()
+
+						TCaida2 = threading.Thread(target = Caida2,args=(P1,P2,P3))
+						TCaida2.start()
+
+
+					if Player2.get_PosY()==352 and Player2.get_PosX()<190:
+						Player2.set_PosY(460)
+					
+					if Player2.get_PosY()==283 and Player2.get_PosX()<25:
+						P1=25
+						P2=Player2.get_PosY()
+						Player2.set_PosY(530)
+						Player2.set_PosX(-100)
+						P3 = Player2.get_PosX()
+
+						TCaida2 = threading.Thread(target = Caida2,args=(P1,P2,P3))
+						TCaida2.start()
+
+					if Player2.get_PosY()==213 and Player2.get_PosX()<195:
+						Player2.set_PosY(283)
+					
+					if Player2.get_PosY()==129 and Player2.get_PosX()<25:
+						P1=25
+						P2=Player2.get_PosY()
+						Player2.set_PosY(530)
+						Player2.set_PosX(-100)
+						P3 = Player2.get_PosX()
+
+						TCaida2 = threading.Thread(target = Caida2,args=(P1,P2,P3))
+						TCaida2.start()
+					
+					if Player2.get_PosY()==43 and Player2.get_PosX()<130:
+						Player2.set_PosY(129)										
+                #================================================DERECHA================================================				
+				if event.key == pygame.K_RIGHT:
+					ActualX = Player1.get_PosX()					
 					Player1.MoverDerecha()
 					Player1.ActualizarSprite()
 					Player_Image = pygame.image.load(Player1.get_imagen())
-					#if Player1.get_PosY()==352 and Player1.get_PosX()>190:
-						#Player1.set_PosY(460)
+					if Player1.get_PosY()==460 and Player1.get_PosX()>515:
+						P1=515
+						P2=Player1.get_PosY()
+						Player1.set_PosY(531)
+						Player1.set_PosX(-101)
+						P3 = Player1.get_PosX()
+
+						TCaida = threading.Thread(target = Caida,args=(P1,P2,P3))
+						TCaida.start()
+					
+					if Player1.get_PosY()==352 and Player1.get_PosX()>515:
+						P1=515
+						P2=Player1.get_PosY()
+						Player1.set_PosY(531)
+						Player1.set_PosX(-101)
+						P3 = Player1.get_PosX()
+
+						TCaida = threading.Thread(target = Caida,args=(P1,P2,P3))
+						TCaida.start()
+
 					if Player1.get_PosY()==283 and Player1.get_PosX()>210:
 						Player1.set_PosY(352)
 					if Player1.get_PosY()==213 and Player1.get_PosX()>430:
 						Player1.set_PosY(352)
-					#if Player1.get_PosY()==352 and Player1.get_PosX()<190:
-						#Player1.set_PosY(460)
+					
+					if Player1.get_PosY()==129 and Player1.get_PosX()>515:
+						P1=515
+						P2=Player1.get_PosY()
+						Player1.set_PosY(531)
+						Player1.set_PosX(-101)
+						P3 = Player1.get_PosX()
+
+						TCaida = threading.Thread(target = Caida,args=(P1,P2,P3))
+						TCaida.start()
+
 					if Player1.get_PosY()==43 and Player1.get_PosX()>417:
 						Player1.set_PosY(129)		
+					if Player1.get_PosY()==530:
+						Player1.set_PosX(ActualX)
 
-				if event.key == pygame.K_x:
-					Player1.Atacar()
-					Player1.ActualizarSprite()
-					Player_Image = pygame.image.load(Player1.get_imagen())
-					FemSound.play()
-					#Player_Sound = pygame.mixer.Sound("Sounds/StickSound.mp3") # Sound of the Cannibal's attack
 
+
+				if event.key == pygame.K_d:
+					ActualX = Player2.get_PosX()					
+					Player2.MoverDerecha()
+					Player2.ActualizarSprite()
+					Player2_Image = pygame.image.load(Player2.get_imagen())
+					if Player2.get_PosY()==460 and Player2.get_PosX()>515:
+						P1=515
+						P2=Player2.get_PosY()
+						Player2.set_PosY(531)
+						Player2.set_PosX(-101)
+						P3 = Player2.get_PosX()
+
+						TCaida2 = threading.Thread(target = Caida2,args=(P1,P2,P3))
+						TCaida2.start()
+					
+					if Player2.get_PosY()==352 and Player2.get_PosX()>515:
+						P1=515
+						P2=Player2.get_PosY()
+						Player2.set_PosY(531)
+						Player2.set_PosX(-101)
+						P3 = Player2.get_PosX()
+
+						TCaida2 = threading.Thread(target = Caida2,args=(P1,P2,P3))
+						TCaida2.start()
+
+					if Player2.get_PosY()==283 and Player2.get_PosX()>210:
+						Player2.set_PosY(352)
+					if Player2.get_PosY()==213 and Player2.get_PosX()>430:
+						Player2.set_PosY(352)
+					
+					if Player2.get_PosY()==129 and Player2.get_PosX()>515:
+						P1=515
+						P2=Player2.get_PosY()
+						Player2.set_PosY(531)
+						Player2.set_PosX(-101)
+						P3 = Player2.get_PosX()
+
+						TCaida2 = threading.Thread(target = Caida2,args=(P1,P2,P3))
+						TCaida2.start()
+
+					if Player2.get_PosY()==43 and Player2.get_PosX()>417:
+						Player2.set_PosY(129)		
+					if Player2.get_PosY()==530:
+						Player2.set_PosX(ActualX)
+						
+				#==============================================ATAQUE===================================================	
+				if event.key == pygame.K_RSHIFT:
+					if ContadorPoder == 2:
+						Player1.Atacar()
+						Player1.ActualizarSprite()
+						Player_Image = pygame.image.load(Player1.get_imagen())
+						ContadorPoder = 0
+						Player1At.play()
+						if Player1.get_Cont()>=0:
+							if Player2.get_Cont()>=0:
+								if Player1.get_PosY()==Player2.get_PosY() and Player1.get_PosX()<Player2.get_PosX()+45 and Player1.get_PosX()>Player2.get_PosX()-85: 
+									if ContadorPoder2==3:
+										ContadorPoder2=0
+									else:	
+										P1=Player2.get_PosX()
+										P2=Player2.get_PosY()
+										Thread_Retro = threading.Thread(target = Retroceder, args = (P1,P2))
+										Thread_Retro.start()
+							if Player2.get_Cont()<=-1:
+								if Player1.get_PosY()==Player2.get_PosY() and Player1.get_PosX()<Player2.get_PosX()+45 and Player1.get_PosX()>Player2.get_PosX()-85: 
+									if ContadorPoder2==3:
+										ContadorPoder2=0
+									else:	
+										P1=Player1.get_PosX()
+										P2=Player1.get_PosY()
+										Thread_Retro2 = threading.Thread(target = Retroceder, args = (P1,P2))
+										Thread_Retro2.start()		
+						if Player1.get_Cont()<=-1:
+							if Player2.get_Cont()<=-1:
+								if Player1.get_PosY()==Player2.get_PosY() and Player1.get_PosX()>Player2.get_PosX()-45 and Player1.get_PosX()<Player2.get_PosX()+85: 
+									if ContadorPoder2==3:
+										ContadorPoder2=0
+									else:	
+										P1=Player2.get_PosX()
+										P2=Player2.get_PosY()
+										Thread_Retro = threading.Thread(target = Retroceder, args = (P1,P2))
+										Thread_Retro.start()
+							if Player2.get_Cont()>=0:
+								if Player1.get_PosY()==Player2.get_PosY() and Player1.get_PosX()>Player2.get_PosX()-85 and Player1.get_PosX()>Player2.get_PosX()+45:
+									if ContadorPoder2==3:
+										ContadorPoder2=0
+									else:
+										P1=Player2.get_PosX()
+										P2=Player2.get_PosY()
+										Thread_Retro2 = threading.Thread(target = Retroceder, args = (P1,P2))
+										Thread_Retro2.start()#if Player1.get_PosY()==Player2.get_PosY() and Player1.get_PosX()<
+				
+				if event.key == pygame.K_f:
+					if ContadorPoder2 == 2:
+						Player2.Atacar()
+						Player2.ActualizarSprite()
+						Player2_Image = pygame.image.load(Player2.get_imagen())
+						ContadorPoder2 = 0
+						Player2At.play()
+						if Player2.get_Cont()>=0:
+							if Player1.get_Cont()>=0:
+								if Player2.get_PosY()==Player1.get_PosY() and Player2.get_PosX()<Player1.get_PosX()+45 and Player2.get_PosX()>Player1.get_PosX()-85: 
+									if ContadorPoder==3:
+										ContadorPoder=0
+									else:	
+										P1=Player1.get_PosX()
+										P2=Player1.get_PosY()
+										Thread_Retro3 = threading.Thread(target = Retroceder2, args = (P1,P2))
+										Thread_Retro3.start()
+							if Player1.get_Cont()<=-1:
+								if Player2.get_PosY()==Player1.get_PosY() and Player2.get_PosX()<Player1.get_PosX()+45 and Player2.get_PosX()>Player1.get_PosX()-85: 
+									if ContadorPoder==3:
+										ContadorPoder=0
+									else:	
+										P1=Player1.get_PosX()
+										P2=Player1.get_PosY()
+										Thread_Retro4 = threading.Thread(target = Retroceder2, args = (P1,P2))
+										Thread_Retro4.start()		
+						if Player2.get_Cont()<=-1:
+							if Player1.get_Cont()<=-1:
+								if Player2.get_PosY()==Player1.get_PosY() and Player2.get_PosX()>Player1.get_PosX()-45 and Player2.get_PosX()<Player1.get_PosX()+85: 
+									if ContadorPoder==3:
+										ContadorPoder=0
+									else:	
+										P1=Player1.get_PosX()
+										P2=Player1.get_PosY()
+										Thread_Retro3 = threading.Thread(target = Retroceder2, args = (P1,P2))
+										Thread_Retro3.start()
+							if Player1.get_Cont()>=0:
+								if Player2.get_PosY()==Player1.get_PosY() and Player2.get_PosX()>Player1.get_PosX()-85 and Player2.get_PosX()>Player1.get_PosX()+45:
+									if ContadorPoder==3:
+										ContadorPoder=0
+									else:
+										P1=Player1.get_PosX()
+										P2=Player1.get_PosY()
+										Thread_Retro4 = threading.Thread(target = Retroceder2, args = (P1,P2))
+										Thread_Retro4.start()#if Player1.get_PosY()==Player2.get_PosY() and Player1.get_PosX()<
+
+            	#==============================================ARRIBA===================================================	
 				if event.key == pygame.K_UP:
+					ActualX = Player1.get_PosX()
 					ActualY = Player1.get_PosY()
+					print(ActualY)
 					Player1.Saltar()
 					Player1.ActualizarSprite()
 					Player_Image = pygame.image.load(Player1.get_imagen())
@@ -86,9 +487,79 @@ def main():
 					elif Player1.get_PosY()>25 and Player1.get_PosY()<60 and Player1.get_PosX()>140 and Player1.get_PosX()<460:
 						Player1.set_PosY(43)
 						print(Player1.get_PosY())
+					elif ActualX ==-100 and ContadorPoder==1:
+						P1=25
+						P2=Player1.get_PosY()
+						Player1.set_Cont(4)
+						Player1.ActualizarSprite()
+						PoderSaltoUsado[0] = False
+						Player_Image = pygame.image.load(Player1.get_imagen())
+						Ts = threading.Thread(target = Subida,args=(P1,P2))
+						Ts.start()
+						ContadorPoder=0
+					elif ActualX ==-101 and ContadorPoder==1:
+						P1=515
+						P2=Player1.get_PosY()
+						Player1.set_Cont(-5)
+						Player1.ActualizarSprite()
+						PoderSaltoUsado[0] = False
+						Player_Image = pygame.image.load(Player1.get_imagen())
+						Ts = threading.Thread(target = Subida,args=(P1,P2))
+						Ts.start()
+						ContadorPoder=0
 					else:
-						Player1.set_PosY(ActualY)	
+						Player1.set_PosY(ActualY)
+						Player1.set_PosX(ActualX)
 
+
+
+				if event.key == pygame.K_w:
+					ActualX = Player2.get_PosX()
+					ActualY = Player2.get_PosY()
+					print(ActualY)
+					Player2.Saltar()
+					Player2.ActualizarSprite()
+					Player2_Image = pygame.image.load(Player2.get_imagen())
+					if Player2.get_PosY()>340 and Player2.get_PosY()<400 and Player2.get_PosX()>180 and Player2.get_PosX()<470:
+						Player2.set_PosY(352)
+						print(Player2.get_PosY())
+					elif Player2.get_PosY()>264 and Player2.get_PosY()<299 and Player2.get_PosX()>56 and Player2.get_PosX()<210:
+						Player2.set_PosY(283)
+						print(Player2.get_PosY())
+					elif Player2.get_PosY()>194 and Player2.get_PosY()<230 and Player2.get_PosX()>185 and Player2.get_PosX()<430:
+						Player2.set_PosY(213)
+						print(Player2.get_PosY())
+					elif Player2.get_PosY()>110 and Player2.get_PosY()<145 and Player2.get_PosX()>190 and Player2.get_PosX()<500:
+						Player2.set_PosY(129)
+						print(Player2.get_PosY())
+					elif Player2.get_PosY()>25 and Player2.get_PosY()<60 and Player2.get_PosX()>140 and Player2.get_PosX()<460:
+						Player2.set_PosY(43)
+						print(Player2.get_PosY())
+					elif ActualX ==-100 and ContadorPoder2==1:
+						P1=25
+						P2=Player2.get_PosY()
+						Player2.set_Cont(4)
+						Player2.ActualizarSprite()
+						PoderSaltoUsado2[0] = False
+						Player2_Image = pygame.image.load(Player2.get_imagen())
+						Ts2 = threading.Thread(target = Subida2,args=(P1,P2))
+						Ts2.start()
+						ContadorPoder2=0
+					elif ActualX ==-101 and ContadorPoder2==1:
+						P1=515
+						P2=Player2.get_PosY()
+						Player2.set_Cont(-5)
+						Player2.ActualizarSprite()
+						PoderSaltoUsado2[0] = False
+						Player2_Image = pygame.image.load(Player2.get_imagen())
+						Ts2 = threading.Thread(target = Subida2,args=(P1,P2))
+						Ts2.start()
+						ContadorPoder2=0
+					else:
+						Player2.set_PosY(ActualY)
+						Player2.set_PosX(ActualX)				
+				
+				#===================================================ABAJO==============================================	
 				if event.key == pygame.K_DOWN:
 					if Player1.get_Cont()>=0:
 						Player1.set_Cont(0)
@@ -98,22 +569,114 @@ def main():
 					Player_Image = pygame.image.load(Player1.get_imagen())
 					if Player1.get_PosY()==352:
 						Player1.set_PosY(460)
-					if Player1.get_PosY()==283:
-						Player1.set_PosY(460)
-					if Player1.get_PosY()==213:
-						Player1.set_PosY(352)
 					if Player1.get_PosY()==129:
-						if Player1.get_PosX()>71 and Player1.get_PosX()<200: 
-							Player1.set_PosY(283)
+						if Player1.get_PosX()>49 and Player1.get_PosX()<200: 
+							Player1.set_PosY(Player1.get_PosY())
 						else:
 							Player1.set_PosY(213)	
 					if Player1.get_PosY()==43:
-						Player1.set_PosY(129)		
+						Player1.set_PosY(129)
+
+				
+
+				if event.key == pygame.K_s:
+					if Player2.get_Cont()>=0:
+						Player2.set_Cont(0)
+					else:
+						Player2.set_Cont(-1)
+					Player2.ActualizarSprite()
+					Player2_Image = pygame.image.load(Player2.get_imagen())
+					if Player2.get_PosY()==352:
+						Player2.set_PosY(460)
+					if Player2.get_PosY()==129:
+						if Player2.get_PosX()>49 and Player2.get_PosX()<200: 
+							Player2.set_PosY(Player2.get_PosY())
+						else:
+							Player2.set_PosY(213)	
+					if Player2.get_PosY()==43:
+						Player2.set_PosY(129)				
+
+			# =============================================================================================================================
+		def Estrella():
+			Estrella_x=random.randint(35,505)
+			Estrella_y=-100
+			Estrella_PassedTime=pygame.time.get_ticks()
+			Estrella_ActualTime=0
+			while True:
+				Estrella_y+=6
+				pygame.time.wait(20)
+				Estrella_ActualTime = pygame.time.get_ticks()
+				if (Estrella_ActualTime - Estrella_PassedTime)//1000>=5:
+					Estrella_PassedTime = pygame.time.get_ticks()
+					Animation_Estrella[0] = True
+					break
+				if Estrella_y>Player1.get_PosY() and Estrella_y < Player1.get_PosY() + 90 and Estrella_x > Player1.get_PosX() and Estrella_x < Player1.get_PosX()+55:	
+					PoderObtenido.play()
+					Estrella_x=-111
+					IndicadorPoder[0]=True
+				if Estrella_y>Player1.get_PosY() and Estrella_y < Player1.get_PosY() + 90 and Estrella_x < Player1.get_PosX() and Estrella_x > Player1.get_PosX()-55:	
+					PoderObtenido.play()
+					Estrella_x=-111
+					IndicadorPoder[0]=True
+				if Estrella_y>Player2.get_PosY() and Estrella_y < Player2.get_PosY() + 95 and Estrella_x > Player2.get_PosX() and Estrella_x < Player2.get_PosX()+55:	
+					PoderObtenido.play()
+					Estrella_x=-111
+					IndicadorPoder2[0]=True
+				if Estrella_y>Player2.get_PosY() and Estrella_y < Player2.get_PosY() + 95 and Estrella_x < Player2.get_PosX() and Estrella_x > Player2.get_PosX()-55:	
+					PoderObtenido.play()
+					Estrella_x=-111
+					IndicadorPoder2[0]=True		
+
+				BronzeCoin = pygame.image.load("ImagenesBAT/EstrellaBAT.png")
+				VentanaJuego.blit(BronzeCoin,(Estrella_x,Estrella_y))
+		
+		if ContadorPoder==0:
+			P = pygame.image.load("ImagenesBAT/EmptyBAT.png")
+		if IndicadorPoder[0]:
+			PoderActual = Power()
+			P = pygame.image.load(PoderActual.get_imagen())
+			if PoderActual.get_Nombre()=="AirJump":
+				ContadorPoder = 1
+			elif PoderActual.get_Nombre()=="ForcePush":
+				ContadorPoder = 2
+			else:
+				ContadorPoder = 3	
+			IndicadorPoder[0]=False
+		
+		if ContadorPoder2==0:
+			PP = pygame.image.load("ImagenesBAT/EmptyBAT.png")
+		if IndicadorPoder2[0]:
+			PoderActual2 = Power()
+			PP = pygame.image.load(PoderActual2.get_imagen())
+			if PoderActual2.get_Nombre()=="AirJump":
+				ContadorPoder2 = 1
+			elif PoderActual2.get_Nombre()=="ForcePush":
+				ContadorPoder2 = 2
+			else:
+				ContadorPoder2 = 3	
+			IndicadorPoder2[0]=False
+
+		if Animation_Estrella[0]:
+			Thread_Estrella = threading.Thread(target = Estrella, args = ())
+			Thread_Estrella.start()
+			Animation_Estrella[0]=False
 
 
-		#print(Player1.get_PosY())	
 		VentanaJuego.blit(Mapa_Image,(0,0))
 		VentanaJuego.blit(Player_Image,(Player1.get_PosX(),Player1.get_PosY()))
+
+		VentanaJuego.blit(Player2_Image,(Player2.get_PosX(),Player2.get_PosY()))
+		
+		if ContadorPoder == 3:
+			Escudo = pygame.image.load("ImagenesBAT/Shield0BAT.png")
+			VentanaJuego.blit(Escudo,(Player1.get_PosX()-15,Player1.get_PosY()))
+
+		if ContadorPoder2 == 3:
+			Escudo2 = pygame.image.load("ImagenesBAT/Shield0BAT.png")
+			VentanaJuego.blit(Escudo2,(Player2.get_PosX()-15,Player2.get_PosY()))	
+		
+		VentanaJuego.blit(P,(0,0))
+		VentanaJuego.blit(PP,(150,0))
 
 		pygame.time.wait(50)
 		pygame.display.update()
