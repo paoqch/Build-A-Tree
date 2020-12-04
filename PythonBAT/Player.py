@@ -5,8 +5,9 @@ class Player:
 		self.PosX=random.randint(95,480)
 		self.PosY=460
 		self.cont=0
-		self.nombre=random.choice(["FemBAT","SeguridadBAT","NinjaBAT"])
+		self.nombre=random.choice(["FemBAT","SeguridadBAT","NinjaBAT","PrincesaBAT"])
 		self.imagen="ImagenesBAT/"+self.nombre+str(self.cont)+".png"
+		self.sonidoAtaque="SonidosBAT/"+self.nombre+"SoundAt.wav"
 
 	def set_PosX(self,PosX):
 		self.PosX = PosX
@@ -31,7 +32,12 @@ class Player:
 	def set_Nombre(self,nombre):
 		self.nombre =	nombre
 	def get_Nombre(self):
-		return self.nombre	
+		return self.nombre
+
+	def set_SonidoAtaque(self,sonido):
+		self.sonidoAtaque = sonido
+	def get_SonidoAtaque(self):
+		return self.sonidoAtaque		
 	
 	def mostrar(self):
 		print("Coordenada x: "+ str(self.PosX))
@@ -70,7 +76,7 @@ class Player:
 			self.cont=-4
 		print(self.cont)
 		print(self.PosX)		
-
+		
 	def Saltar(self):
 		self.PosY-=75
 		if self.cont>=0:
@@ -79,8 +85,17 @@ class Player:
 		else:
 			self.cont=-1
 			self.PosX-=15 
+	
 	def ActualizarSprite(self):
 		self.imagen="ImagenesBAT/"+self.nombre+str(self.cont)+".png"
+
+	def RecibirAtaqueI(self):
+		self.cont = 0 
+		self.PosX -= 80
+
+	def RecibirAtaqueD(self):
+		self.cont = -1
+		self.PosX += 80	
 
 """Player1=Player()
 Player1.MoverDerecha()
