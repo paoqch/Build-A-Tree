@@ -20,14 +20,11 @@ class BTreeNode{
     public int findKey(int key){
 
         int idx = 0;
-        // The conditions for exiting the loop are: 1.idx == num, i.e. scan all of them once
-        // 2. IDX < num, i.e. key found or greater than key
         while (idx < num && keys[idx] < key)
             ++idx;
         return idx;
     }
-
-
+    
     public void remove(int key){
 
         int idx = findKey(key);
@@ -42,19 +39,10 @@ class BTreeNode{
                 System.out.printf("The key %d is does not exist in the tree\n",key);
                 return;
             }
-
-            // Otherwise, the key to be deleted exists in the subtree with the node as the root
-
-            // This flag indicates whether the key exists in the subtree whose root is the last child of the node
-            // When idx is equal to num, the whole node is compared, and flag is true
             boolean flag = idx == num;
 
             if (children[idx].num < MinDeg) // When the child node of the node is not full, fill it first
                 fill(idx);
-
-
-            //If the last child node has been merged, it must have been merged with the previous child node, so we recurse on the (idx-1) child node.
-            // Otherwise, we recurse to the (idx) child node, which now has at least the keys of the minimum degree
             if (flag && idx > num)
                 children[idx-1].remove(key);
             else
@@ -73,17 +61,13 @@ class BTreeNode{
     public void removeFromNonLeaf(int idx){
 
         int key = keys[idx];
-
-        // If the subtree before key (children[idx]) has at least t keys
-        // Then find the precursor 'pred' of key in the subtree with children[idx] as the root
         // Replace key with 'pred', recursively delete pred in children[idx]
         if (children[idx].num >= MinDeg){
             int pred = getPred(idx);
             keys[idx] = pred;
             children[idx].remove(pred);
         }
-        // If children[idx] has fewer keys than MinDeg, check children[idx+1]
-        // If children[idx+1] has at least MinDeg keys, in the subtree whose root is children[idx+1]
+        
         // Find the key's successor 'succ' and recursively delete succ in children[idx+1]
         else if (children[idx+1].num >= MinDeg){
             int succ = getSucc(idx);
@@ -91,9 +75,6 @@ class BTreeNode{
             children[idx+1].remove(succ);
         }
         else{
-            // If the number of keys of children[idx] and children[idx+1] is less than MinDeg
-            // Then key and children[idx+1] are combined into children[idx]
-            // Now children[idx] contains the 2t-1 key
             // Release children[idx+1], recursively delete the key in children[idx]
             merge(idx);
             children[idx].remove(key);
@@ -128,9 +109,6 @@ class BTreeNode{
         else if (idx != num && children[idx+1].num >= MinDeg)
             borrowFromNext(idx);
         else{
-            // Merge children[idx] and its brothers
-            // If children[idx] is the last child node
-            // Then merge it with the previous child node or merge it with its next sibling
             if (idx != num)
                 merge(idx);
             else
@@ -144,9 +122,7 @@ class BTreeNode{
         BTreeNode child = children[idx];
         BTreeNode sibling = children[idx-1];
 
-        // The last key from children[idx-1] overflows to the parent node
-        // The key[idx-1] underflow from the parent node is inserted as the first key in children[idx]
-        // Therefore, sibling decreases by one and children increases by one
+        // Sibling decreases by one and children increases by one
         for (int i = child.num-1; i >= 0; --i) // children[idx] move forward
             child.keys[i+1] = child.keys[i];
 
@@ -247,8 +223,7 @@ class BTreeNode{
             children[i+1].insertNotFull(key);
         }
     }
-
-
+    
     public void splitChild(int i ,BTreeNode y){
 
         // First, create a node to hold the keys of MinDeg-1 of y
@@ -276,8 +251,7 @@ class BTreeNode{
 
         num = num + 1;
     }
-
-
+    
     public void traverse(){
         int i;
         for (i = 0; i< num; i++){
@@ -290,8 +264,7 @@ class BTreeNode{
             children[i].traverse();
         }
     }
-
-
+    
     public BTreeNode search(int key){
         int i = 0;
         while (i < num && key > keys[i])
@@ -375,26 +348,25 @@ class BTree{
     }
 }
 
-
 public class BTreeMain {
 
     public static void main(String[] args) {
-
-        BTree t = new BTree(2); // A B-Tree with minium degree 2
-        t.insert(10);
-        t.insert(20);
-        t.insert(5);
-        t.insert(6);
-        t.insert(12);
-        t.insert(30);
-        t.insert(7);
-        t.insert(17);
+        
+        BTree tree = new BTree(3); // B-Tree with degree 3
+        tree.insert(10);
+        tree.insert(20);
+        tree.insert(5);
+        tree.insert(6);
+        tree.insert(12);
+        tree.insert(30);
+        tree.insert(7);
+        tree.insert(17);
 
         System.out.println("Traversal of tree constructed is");
-        t.traverse();
+        tree.traverse();
         System.out.println();
 
-        t.root = null;
+        tree.root = null;
         System.out.println("\nEnd");
     }
 }
