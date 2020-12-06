@@ -7,6 +7,7 @@ import threading # For the implementation and control of the animation threads
 sys.setrecursionlimit(10**9) # Increased recursion limit
 from Player import Player
 from Power import Power
+from Token import Token
 import socket
 import threading
 
@@ -14,15 +15,52 @@ import threading
 pygame.init()
 
 def main():
+	global data1
+	data1="1"
+	global OrdenChallenges
+	global Primero
+	global Segundo
+	global Ultimo 
 
-	def Conexion():
+
+	def Conexion1(msg):
 		HOST = "localhost"
 		PORT = 5555
+		msg2 = msg
+		global s
 		with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		    s.connect((HOST,PORT))
-		    s.sendall(b"Hola mundooo")
+		    s.sendall((msg2.encode()))
+		    if msg =="H2":
+		    	s.sendall(b"Hola dos")
+		    if msg =="H3":
+		    	s.sendall(b"Holi")	
+		    data1 = s.recv(1024)
+		OrdenChallenges=str(data1).split("|")[1]
+		Primero = OrdenChallenges.split(",")[0]
+		Segundo = OrdenChallenges.split(",")[1]
+		Ultimo = OrdenChallenges.split(",")[2].split("'")[0]
+
+		print ("Recibido ",repr(data1))
+		print("Primero: "+Primero+" Segundo: "+Segundo+" Ultimo: "+Ultimo)
+		#print(str(data1.split(",")[0]))
+		
+
+	def Conexion(msg):
+		HOST = "localhost"
+		PORT = 5555
+		global s
+		with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+		    s.connect((HOST,PORT))
+		    if msg =="H":
+		    	msg="Hola uno"
+		    	s.sendall(b(msg))
+		    if msg =="H2":
+		    	s.sendall(b"Hola dos")
+		    if msg =="H3":
+		    	s.sendall(b"Holi")	
 		    data = s.recv(1024)
-		print ("Recibido ",repr(data))
+		#print ("Recibido ",repr(data))	
 
 	VentanaJuego =  pygame.display.set_mode([600,630])
 	Mapa_Image = pygame.image.load("ImagenesBat/MapaBAT.png").convert()
@@ -31,7 +69,7 @@ def main():
 	
 	# JUGADOR 1 # ==========================================================================================================
 	Player1 = Player()
-	#Conexion()
+	Conexion1("H")
 	Player_Image = pygame.image.load(Player1.get_imagen())
 	P = pygame.image.load("ImagenesBAT/EstrellaBAT.png")
 	Player1.mostrar()
@@ -43,7 +81,8 @@ def main():
 
 	# JUGADOR 2 # ==========================================================================================================
 	Player2 = Player()
-	#Conexion()
+	Conexion("H3")
+	Conexion("H3")
 	Player2_Image = pygame.image.load(Player2.get_imagen())
 	PP = pygame.image.load("ImagenesBAT/EstrellaBAT.png")
 	Player2.mostrar()
@@ -60,6 +99,8 @@ def main():
 
 	global Animation_Estrella
 	Animation_Estrella = [True]
+	global Animation_Tokens
+	Animation_Tokens = [True]
 
 	#pygame.key.set_repeat(1, 1000)
 	while True:
@@ -606,7 +647,7 @@ def main():
 				Estrella_y+=6
 				pygame.time.wait(20)
 				Estrella_ActualTime = pygame.time.get_ticks()
-				if (Estrella_ActualTime - Estrella_PassedTime)//1000>=5:
+				if (Estrella_ActualTime - Estrella_PassedTime)//1000>=6:
 					Estrella_PassedTime = pygame.time.get_ticks()
 					Animation_Estrella[0] = True
 					break
@@ -627,8 +668,50 @@ def main():
 					Estrella_x=-111
 					IndicadorPoder2[0]=True		
 
-				BronzeCoin = pygame.image.load("ImagenesBAT/EstrellaBAT.png")
-				VentanaJuego.blit(BronzeCoin,(Estrella_x,Estrella_y))
+				Star = pygame.image.load("ImagenesBAT/EstrellaBAT.png")
+				VentanaJuego.blit(Star,(Estrella_x,Estrella_y))
+
+		def Tokens():
+			Token_x=random.randint(35,505)
+			Token_y=-100
+			Token_PassedTime=pygame.time.get_ticks()
+			Token_ActualTime=0
+			Token0 = Token()
+			while True:
+				Token_y+=6
+				pygame.time.wait(20)
+				Token_ActualTime = pygame.time.get_ticks()
+				if (Token_ActualTime - Token_PassedTime)//1000>=4:
+					Token_PassedTime = pygame.time.get_ticks()
+					Animation_Tokens[0] = True
+					break
+				if Token_y>Player1.get_PosY() and Token_y < Player1.get_PosY() + 90 and Token_x > Player1.get_PosX() and Token_x < Player1.get_PosX()+55:	
+					PoderObtenido.play()
+					Token_x=-111
+					print(Token0.get_Figura()+" "+str(Token0.get_Valor()))
+					Token_PassedTime = pygame.time.get_ticks()
+
+				if Token_y>Player1.get_PosY() and Token_y < Player1.get_PosY() + 90 and Token_x < Player1.get_PosX() and Token_x > Player1.get_PosX()-55:	
+					PoderObtenido.play()
+					Token_x=-111
+					print(Token0.get_Figura()+" "+str(Token0.get_Valor()))
+					Token_PassedTime = pygame.time.get_ticks()
+
+				if Token_y>Player2.get_PosY() and Token_y < Player2.get_PosY() + 95 and Token_x > Player2.get_PosX() and Token_x < Player2.get_PosX()+55:	
+					PoderObtenido.play()
+					Token_x=-111
+					print(Token0.get_Figura()+" "+str(Token0.get_Valor()))
+					Token_PassedTime = pygame.time.get_ticks()
+
+				if Token_y>Player2.get_PosY() and Token_y < Player2.get_PosY() + 95 and Token_x < Player2.get_PosX() and Token_x > Player2.get_PosX()-55:	
+					PoderObtenido.play()
+					Token_x=-111
+					print(Token0.get_Figura()+" "+str(Token0.get_Valor()))
+					Token_PassedTime = pygame.time.get_ticks()
+				
+				Token_Image = pygame.image.load(Token0.get_imagen())
+				Token_Image = pygame.transform.scale(Token_Image, (40, 40))
+				VentanaJuego.blit(Token_Image,(Token_x,Token_y))		
 		
 		if ContadorPoder==0:
 			P = pygame.image.load("ImagenesBAT/EmptyBAT.png")
@@ -660,6 +743,11 @@ def main():
 			Thread_Estrella = threading.Thread(target = Estrella, args = ())
 			Thread_Estrella.start()
 			Animation_Estrella[0]=False
+
+		if Animation_Tokens[0]:
+			Thread_Token = threading.Thread(target = Tokens, args = ())
+			Thread_Token.start()
+			Animation_Tokens[0]=False
 
 
 		VentanaJuego.blit(Mapa_Image,(0,0))

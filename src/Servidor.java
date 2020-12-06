@@ -13,7 +13,7 @@ public class Servidor {
             System.out.println("Conectado al puerto: "+PUERTO);
             System.out.println("Esperando cliente(s)");
 
-            for (int numCliente = 0; numCliente<4;numCliente++){
+            for (int numCliente = 0; numCliente<100;numCliente++){
                 //Creo un nuevo socket que getiona la conexion
                 Socket socketCliente = socketServidor.accept();
 
@@ -22,9 +22,39 @@ public class Servidor {
                 OutputStream mensajeParaCliente = socketCliente.getOutputStream();
                 DataOutputStream flujo = new DataOutputStream(mensajeParaCliente);
                 //Formato string
-                flujo.writeUTF("Bienvenido cliente "+numCliente+ ", el puerto de escucha es el "+PUERTO+" y el puerto de comunicacion bidireccional es el "+socketCliente.getPort());
+                String[] available_cards = {"BST", "B", "AVL", "Splay"};
+                java.util.Random random = new java.util.Random();
+                int random_Tree_Order = random.nextInt(available_cards.length);
+                int random_Tree_Order2 = random.nextInt(available_cards.length);
+                int random_Tree_Order3 = random.nextInt(available_cards.length);
+                System.out.println(available_cards[random_Tree_Order]+","+available_cards[random_Tree_Order2]+","+available_cards[random_Tree_Order3]);
 
+                flujo.writeUTF("|"+available_cards[random_Tree_Order]+","+available_cards[random_Tree_Order2]+","+available_cards[random_Tree_Order3]);
+
+                InputStreamReader in = new InputStreamReader(socketCliente.getInputStream());
+                BufferedReader bf = new BufferedReader(in);
+
+                String str = bf.readLine();
+                System.out.println("client: "+ str);
+                int cont = 0;
+                if (str == "Hola dos");{
+                    cont+=1;
+                    System.out.println("funciona");
+                    System.out.println(cont);
+                }
+                if (str == "Holi");{
+                    cont+=2;
+                    System.out.println("funciona");
+                    System.out.println(cont);
+                }
+                if (str == "Hola uno");{
+                    cont+=3;
+                    System.out.println("funciona");
+                    System.out.println(cont);
+                }
                 socketCliente.close();
+
+
             }
             System.out.println("Demasiados clientes");
         } catch (IOException e) {
