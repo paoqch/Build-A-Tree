@@ -13,7 +13,7 @@ public class Servidor {
             System.out.println("Conectado al puerto: "+PUERTO);
             System.out.println("Esperando cliente(s)");
 
-            for (int numCliente = 0; numCliente<100;numCliente++){
+            for (int numCliente = 0; numCliente<1000;numCliente++){
                 //Creo un nuevo socket que getiona la conexion
                 Socket socketCliente = socketServidor.accept();
 

@@ -8,6 +8,8 @@ class Player:
 		self.nombre=random.choice(["FemBAT","SeguridadBAT","NinjaBAT","PrincesaBAT"])
 		self.imagen="ImagenesBAT/"+self.nombre+str(self.cont)+".png"
 		self.sonidoAtaque="SonidosBAT/"+self.nombre+"SoundAt.wav"
+		self.puntuacionP=0
+		self.puntuacionT=0
 
 	def set_PosX(self,PosX):
 		self.PosX = PosX
@@ -37,7 +39,18 @@ class Player:
 	def set_SonidoAtaque(self,sonido):
 		self.sonidoAtaque = sonido
 	def get_SonidoAtaque(self):
-		return self.sonidoAtaque		
+		return self.sonidoAtaque
+
+	def set_PuntuacionP(self,puntuacionP):
+		self.puntuacionP = puntuacionP
+	def get_PuntuacionP(self):
+		return self.puntuacionP
+
+	def set_PuntuacionT(self,puntuacionT):
+		self.puntuacionT = puntuacionT
+	def get_PuntuacionT(self):
+		return self.puntuacionT		
+
 	
 	def mostrar(self):
 		print("Coordenada x: "+ str(self.PosX))
@@ -91,15 +104,23 @@ class Player:
 
 	def RecibirAtaqueI(self):
 		self.cont = 0 
-		self.PosX -= 80
+		self.PosX -= 87
 
 	def RecibirAtaqueD(self):
 		self.cont = -1
-		self.PosX += 80	
+		self.PosX += 87
 
-"""Player1=Player()
-Player1.MoverDerecha()
-Player1.MoverDerecha()
-Player1.MoverIzquierda()
-Player1.ActualizarSprite()
-print(Player1.get_imagen())"""
+	def AumentoPuntos(self):
+		self.puntuacionP+=100
+
+	def ReinicioPuntos(self):
+		self.puntuacionP=0
+
+	def AumentoaTotal(self,aumento):
+		self.puntuacionT+=aumento				
+
+Player1=Player()
+Player1.AumentoPuntos()
+Player1.AumentoPuntos()
+#Player1.ReinicioPuntos()
+print(Player1.get_PuntuacionP())

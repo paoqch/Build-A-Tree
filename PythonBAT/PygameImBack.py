@@ -21,7 +21,7 @@ def main():
 	global Primero
 	global Segundo
 	global Ultimo 
-
+	global ChallengeActual
 
 	def Conexion1(msg):
 		HOST = "localhost"
@@ -33,14 +33,17 @@ def main():
 		    s.sendall((msg2.encode()))	
 		    data1 = s.recv(1024)
 		OrdenChallenges=str(data1).split("|")[1]
+		global Primero
 		Primero = OrdenChallenges.split(",")[0]
+		global Segundo
 		Segundo = OrdenChallenges.split(",")[1]
+		global Ultimo
 		Ultimo = OrdenChallenges.split(",")[2].split("'")[0]
-
 		print ("Recibido ",repr(data1))
 		print("Primero: "+Primero+" Segundo: "+Segundo+" Ultimo: "+Ultimo)
 		#print(str(data1.split(",")[0]))
 		
+	
 
 	def Conexion(msg):
 		HOST = "localhost"
@@ -55,12 +58,16 @@ def main():
 
 	VentanaJuego =  pygame.display.set_mode([600,630])
 	Mapa_Image = pygame.image.load("ImagenesBat/MapaBAT.png").convert()
-	
 	ShieldIm = pygame.image.load("ImagenesBat/ShieldBAT.png")
-	
+	P1Win_Image = pygame.image.load("ImagenesBAT/P1WinBAT.jpg") 
+	P2Win_Image = pygame.image.load("ImagenesBAT/P2WinBAT.jpg") 
+	TokenObtenido = pygame.mixer.Sound("SonidosBAT/TokenSoundBAT.wav")
+	TokenIncorrecto = pygame.mixer.Sound("SonidosBAT/FailSoundBAT.wav")
+	font1 = pygame.font.SysFont("Britannic" , 30)
+	TextColor = (74,48,111)
 	# JUGADOR 1 # ==========================================================================================================
 	Player1 = Player()
-	Conexion1()
+	Conexion1("inicio")
 	Player_Image = pygame.image.load(Player1.get_imagen())
 	P = pygame.image.load("ImagenesBAT/EstrellaBAT.png")
 	Player1.mostrar()
@@ -69,6 +76,10 @@ def main():
 	IndicadorPoder = [False]
 	global ContadorPoder
 	ContadorPoder = 0
+	global P1PuntosP
+	P1PuntosP = 0
+	global P1Total
+	P1Total = 0
 
 	# JUGADOR 2 # ==========================================================================================================
 	Player2 = Player()
@@ -82,20 +93,38 @@ def main():
 	IndicadorPoder2 = [False]
 	global ContadorPoder2
 	ContadorPoder2 = 0
+	global P2PuntosP
+	P2PuntosP = 0
+	global P2Total
+	P2Total = 0
 
 	# ======================================================================================================================
 
-
+	ChallengeActual = Primero
 	PoderObtenido = pygame.mixer.Sound("SonidosBAT/EstrellaSoundBAT.mp3")
 
 	global Animation_Estrella
 	Animation_Estrella = [True]
 	global Animation_Tokens
 	Animation_Tokens = [True]
+	global Challenge_Image
+
+	global FinChallenge
+	FinChallenge = [False]
+	global FinJuego
+	FinJuego = [False]
+
+	global contChallenge
+	contChallenge = 0
+	global contChallenge2
+	contChallenge2 = 0
+	global contChallenge3
+	contChallenge3 = 0
+
 
 	#pygame.key.set_repeat(1, 1000)
 	while True:
-		
+		Challenge_Image = pygame.image.load("ImagenesBAT/"+ChallengeActual+"BAT.png")
 		global PoderSaltoUsado
 		PoderSaltoUsado = [True]
 
@@ -122,7 +151,23 @@ def main():
 					P1-=10
 					cont+=10
 					VentanaJuego.blit(Player_Image2,(P1,P2))		
-					pygame.time.wait(20)		
+					pygame.time.wait(20)
+			if Player2.get_PosX()>515:
+				P1=515
+				P2=Player2.get_PosY()
+				Player2.set_PosY(531)
+				Player2.set_PosX(-101)
+				P3 = Player2.get_PosX()
+				TCaida2 = threading.Thread(target = Caida2,args=(P1,P2,P3))
+				TCaida2.start()
+			if Player2.get_PosX()<25:
+				P1=25
+				P2=Player2.get_PosY()
+				Player2.set_PosY(530)
+				Player2.set_PosX(-100)
+				P3 = Player2.get_PosX()
+				TCaida2 = threading.Thread(target = Caida2,args=(P1,P2,P3))
+				TCaida2.start()					
 
 		def Retroceder2(P1,P2):
 			Player_Image2 = pygame.image.load(Player1.get_imagen())
@@ -144,7 +189,23 @@ def main():
 					P1-=10
 					cont+=10
 					VentanaJuego.blit(Player_Image2,(P1,P2))		
-					pygame.time.wait(20)	
+					pygame.time.wait(20)
+			if Player1.get_PosX()>515:
+				P1=515
+				P2=Player1.get_PosY()
+				Player1.set_PosY(531)
+				Player1.set_PosX(-101)
+				P3 = Player1.get_PosX()
+				TCaida = threading.Thread(target = Caida,args=(P1,P2,P3))
+				TCaida.start()
+			if Player1.get_PosX()<25:
+				P1=25
+				P2=Player1.get_PosY()
+				Player1.set_PosY(530)
+				Player1.set_PosX(-100)
+				P3 = Player1.get_PosX()
+				TCaida = threading.Thread(target = Caidaa,args=(P1,P2,P3))
+				TCaida.start()				
 
 		def Subida(P1,P2):
 			Player_Image2 = pygame.image.load(Player1.get_imagen())
@@ -377,7 +438,7 @@ def main():
 						P1=515
 						P2=Player2.get_PosY()
 						Player2.set_PosY(531)
-						Player2.set_PosX(-101)BST,0
+						Player2.set_PosX(-101)
 						P3 = Player2.get_PosX()
 
 						TCaida2 = threading.Thread(target = Caida2,args=(P1,P2,P3))
@@ -677,27 +738,55 @@ def main():
 					Animation_Tokens[0] = True
 					break
 				if Token_y>Player1.get_PosY() and Token_y < Player1.get_PosY() + 90 and Token_x > Player1.get_PosX() and Token_x < Player1.get_PosX()+55:	
-					PoderObtenido.play()
 					Token_x=-111
 					print(Token0.get_Figura()+" "+str(Token0.get_Valor()))
+					if Token0.get_Arbol()==ChallengeActual:
+						TokenObtenido.play()
+						Player1.AumentoPuntos()
+						Conexion(Token0.get_Arbol()+"/1/"+str(Token0.get_Valor()))
+					else:
+						TokenIncorrecto.play()
+						Player1.ReinicioPuntos()
+						Conexion(Token0.get_Arbol()+"/1/0")
 					Token_PassedTime = pygame.time.get_ticks()
 
-				if Token_y>Player1.get_PosY() and Token_y < Player1.get_PosY() + 90 and Token_x < Player1.get_PosX() and Token_x > Player1.get_PosX()-55:	
-					PoderObtenido.play()
+				elif Token_y>Player1.get_PosY() and Token_y < Player1.get_PosY() + 90 and Token_x < Player1.get_PosX() and Token_x > Player1.get_PosX()-55:	
 					Token_x=-111
 					print(Token0.get_Figura()+" "+str(Token0.get_Valor()))
+					if Token0.get_Arbol()==ChallengeActual:
+						TokenObtenido.play()
+						Player1.AumentoPuntos()
+						Conexion(Token0.get_Arbol()+"/1/"+str(Token0.get_Valor()))
+					else:
+						TokenIncorrecto.play()
+						Player1.ReinicioPuntos()
+						Conexion(Token0.get_Arbol()+"/1/0")
 					Token_PassedTime = pygame.time.get_ticks()
 
-				if Token_y>Player2.get_PosY() and Token_y < Player2.get_PosY() + 95 and Token_x > Player2.get_PosX() and Token_x < Player2.get_PosX()+55:	
-					PoderObtenido.play()
+				elif Token_y>Player2.get_PosY() and Token_y < Player2.get_PosY() + 95 and Token_x > Player2.get_PosX() and Token_x < Player2.get_PosX()+55:	
 					Token_x=-111
 					print(Token0.get_Figura()+" "+str(Token0.get_Valor()))
+					if Token0.get_Arbol()==ChallengeActual:
+						TokenObtenido.play()
+						Player2.AumentoPuntos()
+						Conexion(Token0.get_Arbol()+"/2/"+str(Token0.get_Valor()))
+					else:
+						TokenIncorrecto.play()
+						Player2.ReinicioPuntos()
+						Conexion(Token0.get_Arbol()+"/2/0")
 					Token_PassedTime = pygame.time.get_ticks()
 
-				if Token_y>Player2.get_PosY() and Token_y < Player2.get_PosY() + 95 and Token_x < Player2.get_PosX() and Token_x > Player2.get_PosX()-55:	
-					PoderObtenido.play()
+				elif Token_y>Player2.get_PosY() and Token_y < Player2.get_PosY() + 95 and Token_x < Player2.get_PosX() and Token_x > Player2.get_PosX()-55:	
 					Token_x=-111
 					print(Token0.get_Figura()+" "+str(Token0.get_Valor()))
+					if Token0.get_Arbol()==ChallengeActual:
+						TokenObtenido.play()
+						Player2.AumentoPuntos()
+						Conexion(Token0.get_Arbol()+"/2/"+str(Token0.get_Valor()))
+					else:
+						TokenIncorrecto.play()
+						Player2.ReinicioPuntos()
+						Conexion(Token0.get_Arbol()+"/2/0")
 					Token_PassedTime = pygame.time.get_ticks()
 				
 				Token_Image = pygame.image.load(Token0.get_imagen())
@@ -729,7 +818,35 @@ def main():
 			else:
 				ContadorPoder2 = 3	
 			IndicadorPoder2[0]=False
+		if Tiempo>80000:
+			contChallenge+=1
+			ChallengeActual=Segundo
+			if contChallenge==1:
+				FinChallenge[0]=True
 
+		if Tiempo>160000:
+			contChallenge2+=1
+			ChallengeActual=Ultimo
+			if contChallenge2==1:
+				FinChallenge[0]=True
+
+		if Tiempo>240000:
+			contChallenge3+=1
+			if contChallenge3==1:
+				FinJuego[0]=True		
+
+		if FinChallenge[0]:
+			Player1.AumentoaTotal(Player1.get_PuntuacionP())
+			Player1.ReinicioPuntos()
+			Player2.AumentoaTotal(Player2.get_PuntuacionP())
+			Player2.ReinicioPuntos()
+			print("Parcial: "+str(Player1.get_PuntuacionP())+" Total: "+str(Player1.get_PuntuacionT()))
+			print("Parcial: "+str(Player2.get_PuntuacionP())+" Total: "+str(Player2.get_PuntuacionT()))
+			FinChallenge[0]=False
+
+		
+
+					
 		if Animation_Estrella[0]:
 			Thread_Estrella = threading.Thread(target = Estrella, args = ())
 			Thread_Estrella.start()
@@ -739,6 +856,20 @@ def main():
 			Thread_Token = threading.Thread(target = Tokens, args = ())
 			Thread_Token.start()
 			Animation_Tokens[0]=False
+
+		if Player1.get_PosY()>=630:
+			Player1.set_PosY(43)
+			Player1.set_Cont(0)
+			Player1.ActualizarSprite()
+			Player1.set_PosX(random.randint(160,440))
+			pygame.time.delay(1000)
+
+		if Player2.get_PosY()>=630:
+			Player2.set_PosY(43)
+			Player2.set_Cont(0)
+			Player2.ActualizarSprite()
+			Player2.set_PosX(random.randint(160,440))
+			pygame.time.delay(1000)	
 
 
 		VentanaJuego.blit(Mapa_Image,(0,0))
@@ -753,10 +884,40 @@ def main():
 		if ContadorPoder2 == 3:
 			Escudo2 = pygame.image.load("ImagenesBAT/Shield0BAT.png")
 			VentanaJuego.blit(Escudo2,(Player2.get_PosX()-15,Player2.get_PosY()))	
-		
-		VentanaJuego.blit(P,(0,0))
-		VentanaJuego.blit(PP,(150,0))
+		VentanaJuego.blit(Challenge_Image,(470,0))
+		VentanaJuego.blit(P,(60,2))
+		VentanaJuego.blit(PP,(200,2))
 
+		P1PuntosP_Label = font1.render(str(Player1.get_PuntuacionP()), True, TextColor)
+		P1Total_Label = font1.render(str(Player1.get_PuntuacionT()), True, TextColor)
+		P1_Label = font1.render("P1", True, TextColor)
+		VentanaJuego.blit(P1_Label,(7,10))
+		VentanaJuego.blit(P1PuntosP_Label,(7,50))
+		VentanaJuego.blit(P1Total_Label,(67,50))
+
+		P2PuntosP_Label = font1.render(str(Player2.get_PuntuacionP()), True, TextColor)
+		P2Total_Label = font1.render(str(Player2.get_PuntuacionT()), True, TextColor)
+		P2_Label = font1.render("P2", True, TextColor)
+		VentanaJuego.blit(P2_Label,(147,10))
+		VentanaJuego.blit(P2PuntosP_Label,(147,50))
+		VentanaJuego.blit(P2Total_Label,(207,50))
+
+
+		if FinJuego[0]:
+			if Player1.get_PuntuacionT()>Player2.get_PuntuacionT():
+				VentanaJuego.blit(P1Win_Image,(100,115))
+				Player_ImageWin=Player_Image
+				Player_ImageWin = pygame.transform.scale(Player_ImageWin, (100, 150))
+				VentanaJuego.blit(Player_ImageWin,(225,300))
+
+			if Player2.get_PuntuacionT()>Player1.get_PuntuacionT():
+				VentanaJuego.blit(P2Win_Image,(100,115))
+				Player2_ImageWin=Player2_Image
+				Player2_ImageWin = pygame.transform.scale(Player2_ImageWin, (100, 150))
+				VentanaJuego.blit(Player2_ImageWin,(225,300))	
+		
+
+		print(Tiempo)	
 		pygame.time.wait(50)
 		pygame.display.update()
 
