@@ -30,11 +30,7 @@ def main():
 		global s
 		with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		    s.connect((HOST,PORT))
-		    s.sendall((msg2.encode()))
-		    if msg =="H2":
-		    	s.sendall(b"Hola dos")
-		    if msg =="H3":
-		    	s.sendall(b"Holi")	
+		    s.sendall((msg2.encode()))	
 		    data1 = s.recv(1024)
 		OrdenChallenges=str(data1).split("|")[1]
 		Primero = OrdenChallenges.split(",")[0]
@@ -49,16 +45,11 @@ def main():
 	def Conexion(msg):
 		HOST = "localhost"
 		PORT = 5555
+		msg2 = msg
 		global s
 		with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		    s.connect((HOST,PORT))
-		    if msg =="H":
-		    	msg="Hola uno"
-		    	s.sendall(b(msg))
-		    if msg =="H2":
-		    	s.sendall(b"Hola dos")
-		    if msg =="H3":
-		    	s.sendall(b"Holi")	
+		    s.sendall((msg2.encode()))
 		    data = s.recv(1024)
 		#print ("Recibido ",repr(data))	
 
@@ -69,7 +60,7 @@ def main():
 	
 	# JUGADOR 1 # ==========================================================================================================
 	Player1 = Player()
-	Conexion1("H")
+	Conexion1()
 	Player_Image = pygame.image.load(Player1.get_imagen())
 	P = pygame.image.load("ImagenesBAT/EstrellaBAT.png")
 	Player1.mostrar()
@@ -386,7 +377,7 @@ def main():
 						P1=515
 						P2=Player2.get_PosY()
 						Player2.set_PosY(531)
-						Player2.set_PosX(-101)
+						Player2.set_PosX(-101)BST,0
 						P3 = Player2.get_PosX()
 
 						TCaida2 = threading.Thread(target = Caida2,args=(P1,P2,P3))
