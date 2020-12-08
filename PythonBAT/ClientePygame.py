@@ -61,8 +61,11 @@ def main():
 	ShieldIm = pygame.image.load("ImagenesBat/ShieldBAT.png")
 	P1Win_Image = pygame.image.load("ImagenesBAT/P1WinBAT.jpg") 
 	P2Win_Image = pygame.image.load("ImagenesBAT/P2WinBAT.jpg") 
-	TokenObtenido = pygame.mixer.Sound("SonidosBAT/TokenSoundBAT.wav")
-	TokenIncorrecto = pygame.mixer.Sound("SonidosBAT/FailSoundBAT.wav")
+	TokenObtenido = pygame.mixer.Sound("SonidosBAT/TokensSoundBAT.mp3")
+	TokenIncorrecto = pygame.mixer.Sound("SonidosBAT/FalloSoundBAT.mp3")
+	Soundtrack1 = pygame.mixer.Sound("SonidosBAT/OST1SoundBAT.mp3")
+	Soundtrack2 = pygame.mixer.Sound("SonidosBAT/OST2SoundBAT.mp3")
+	Soundtrack3 = pygame.mixer.Sound("SonidosBAT/OST3SoundBAT.mp3")
 	font1 = pygame.font.SysFont("Britannic" , 30)
 	TextColor = (74,48,111)
 	# JUGADOR 1 # ==========================================================================================================
@@ -76,10 +79,7 @@ def main():
 	IndicadorPoder = [False]
 	global ContadorPoder
 	ContadorPoder = 0
-	global P1PuntosP
-	P1PuntosP = 0
-	global P1Total
-	P1Total = 0
+
 
 	# JUGADOR 2 # ==========================================================================================================
 	Player2 = Player()
@@ -93,10 +93,6 @@ def main():
 	IndicadorPoder2 = [False]
 	global ContadorPoder2
 	ContadorPoder2 = 0
-	global P2PuntosP
-	P2PuntosP = 0
-	global P2Total
-	P2Total = 0
 
 	# ======================================================================================================================
 
@@ -113,7 +109,12 @@ def main():
 	FinChallenge = [False]
 	global FinJuego
 	FinJuego = [False]
-
+	global InicioOst
+	InicioOst = [False]
+	global SiguienteOst
+	SiguienteOst = [False]
+	global UltimoOst
+	UltimoOst = [False]
 	global contChallenge
 	contChallenge = 0
 	global contChallenge2
@@ -121,6 +122,12 @@ def main():
 	global contChallenge3
 	contChallenge3 = 0
 
+	global contSoundtrack
+	contSoundtrack = 0
+	global contSoundtrack2
+	contSoundtrack2 = 0
+	global contSoundtrack3
+	contSoundtrack3 = 0
 
 	#pygame.key.set_repeat(1, 1000)
 	while True:
@@ -818,6 +825,20 @@ def main():
 			else:
 				ContadorPoder2 = 3	
 			IndicadorPoder2[0]=False
+		
+		"""if Tiempo>0:
+			contSoundtrack+=1
+			if contSoundtrack==1:
+				InicioOst[0]=True
+		if Tiempo>56000:
+			contSoundtrack2+=1
+			if contSoundtrack2==1:
+				SiguienteOst[0]=True
+		if Tiempo>160000:
+			contSoundtrack3+=1
+			if contSoundtrack3==1:
+				UltimoOst[0]=True"""			
+
 		if Tiempo>80000:
 			contChallenge+=1
 			ChallengeActual=Segundo
@@ -844,7 +865,12 @@ def main():
 			print("Parcial: "+str(Player2.get_PuntuacionP())+" Total: "+str(Player2.get_PuntuacionT()))
 			FinChallenge[0]=False
 
-		
+		if InicioOst[0]:
+			Soundtrack1.play()
+		if SiguienteOst[0]:
+			Soundtrack2.play()
+		if UltimoOst[0]:
+			Soundtrack3.play()		
 
 					
 		if Animation_Estrella[0]:
@@ -917,7 +943,7 @@ def main():
 				VentanaJuego.blit(Player2_ImageWin,(225,300))	
 		
 
-		print(Tiempo)	
+	
 		pygame.time.wait(50)
 		pygame.display.update()
 
