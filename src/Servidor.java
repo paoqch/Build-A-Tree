@@ -3,7 +3,7 @@ import java.net.*;
 
 public class Servidor {
     ChallegeAVLClass Ch1 = new ChallegeAVLClass();
-    ChallegeBSTClass Ch2 = new ChallegeBSTClass();
+    ChallengeBSTClass Ch2 = new ChallengeBSTClass();
     ChallegeSplayClass Ch3 = new ChallegeSplayClass();
     Tokens tokens = new Tokens();
     String[] TokensGenerados = tokens.GenerarTokensAleatorios(16);
