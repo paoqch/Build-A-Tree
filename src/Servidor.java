@@ -2,8 +2,12 @@ import java.io.*;
 import java.net.*;
 
 public class Servidor {
-
+    ChallegeAVLClass Ch1= new ChallegeAVLClass();
+    ChallegeSplayClass Ch3= new ChallegeSplayClass();
+    Tokens tokens = new Tokens();
+    String[] TokensGenerados = tokens.GenerarTokensAleatorios(16);
     static final int PUERTO=5555;
+
     public Servidor(){
         try{
             System.out.println("Inicializando Servidor");
@@ -30,28 +34,37 @@ public class Servidor {
                 System.out.println(available_cards[random_Tree_Order]+","+available_cards[random_Tree_Order2]+","+available_cards[random_Tree_Order3]);
 
                 flujo.writeUTF("|"+available_cards[random_Tree_Order]+","+available_cards[random_Tree_Order2]+","+available_cards[random_Tree_Order3]);
+                flujo.writeUTF( "|" + TokensGenerados);
 
                 InputStreamReader in = new InputStreamReader(socketCliente.getInputStream());
                 BufferedReader bf = new BufferedReader(in);
 
                 String str = bf.readLine();
                 System.out.println("client: "+ str);
-                int cont = 0;
-                if (str == "Hola dos");{
-                    cont+=1;
-                    System.out.println("funciona");
-                    System.out.println(cont);
+                String [] msg = str.split("/");
+                String tree = msg[0];
+                String[] msg2 = msg[1].split("/");
+                Integer jugador = Integer.parseInt(msg2[0]);
+                Integer valor = Integer.parseInt(msg2[1]) ;
+
+                switch(tree){
+                    case "AVL":
+                         Ch1.ChallegeAVL(jugador,valor);
+                        break;
+
+                    case "BST":
+                        //Challege
+                        break;
+
+                    case"Splay":
+                        Ch3.ChallegeSplay(jugador,valor);
+                        break;
+
+                    case "B":
+                        //Challege
+                        break;
                 }
-                if (str == "Holi");{
-                    cont+=2;
-                    System.out.println("funciona");
-                    System.out.println(cont);
-                }
-                if (str == "Hola uno");{
-                    cont+=3;
-                    System.out.println("funciona");
-                    System.out.println(cont);
-                }
+
                 socketCliente.close();
 
 
