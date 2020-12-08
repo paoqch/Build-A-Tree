@@ -1,3 +1,6 @@
+/***
+ * Binary Search Tree class
+ */
 public class BinarySearchTree {
     // Class containing left and right child
     class Node {
@@ -17,6 +20,13 @@ public class BinarySearchTree {
 
         root = null;
     }
+
+    /***
+     *
+     * @param currPtr
+     * @param indent
+     * @param last
+     */
     //Print tree method
     private void printHelper(Node currPtr, String indent, boolean last) {
         // print the tree structure on the screen
@@ -37,11 +47,21 @@ public class BinarySearchTree {
         }
     }
 
+    /***
+     *
+     * @param key
+     */
     // deleteRec() call
     void deleteKey(int key) {
         root = deleteRec(root, key);
     }
 
+    /***
+     *
+     * @param root
+     * @param key
+     * @return
+     */
     //Delete an existing key in BST
     Node deleteRec(Node root, int key) {
         //If the tree is empty
@@ -71,6 +91,11 @@ public class BinarySearchTree {
         return root;
     }
 
+    /***
+     *
+     * @param root
+     * @return
+     */
     int minValue(Node root) {
         int minv = root.key;
         while (root.left != null) {
@@ -80,12 +105,24 @@ public class BinarySearchTree {
         return minv;
     }
 
+    /***
+     *
+     * @param root
+     * @param key
+     * @return
+     */
     // insertRec() call
     Node insert(Node root, int key) {
         this.root = insertRec(this.root, key);
         return null;
     }
 
+    /***
+     *
+     * @param root
+     * @param key
+     * @return
+     */
     //Insert a new key in BST
     Node insertRec(Node root, int key)
     {
@@ -104,9 +141,15 @@ public class BinarySearchTree {
         return root;
     }
 
-    // InorderRec() call
-    void inorder() { inorderRec(root); }
 
+    // InorderRec() call
+    void inorder() {
+        inorderRec(root); }
+
+    /***
+     *
+     * @param root
+     */
     // Inorder traversal of BST
     void inorderRec(Node root)
     {
@@ -116,7 +159,11 @@ public class BinarySearchTree {
             inorderRec(root.right);
         }
     }
-    //printHelper method call
+
+    /***
+     * printHelper method call
+     */
+    
     public void prettyPrint() {
         printHelper(this.root, "", true);
     }
