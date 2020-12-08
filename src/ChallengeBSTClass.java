@@ -13,7 +13,7 @@ public class ChallengeBSTClass {
      * @param jugador jugador al que le pertenece el arbol
      * @param valor   Numero que desea insertar al arbol
      */
-    public void ChallengeBSTClass(int jugador, int valor) {
+    public void ChallengeBST(int jugador, int valor) {
         switch (jugador) {
             case 1:
                 if (count1 == 6) {
