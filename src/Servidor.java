@@ -2,8 +2,9 @@ import java.io.*;
 import java.net.*;
 
 public class Servidor {
-    ChallegeAVLClass Ch1= new ChallegeAVLClass();
-    ChallegeSplayClass Ch3= new ChallegeSplayClass();
+    ChallegeAVLClass Ch1 = new ChallegeAVLClass();
+    ChallegeBSTClass Ch2 = new ChallegeBSTClass();
+    ChallegeSplayClass Ch3 = new ChallegeSplayClass();
     Tokens tokens = new Tokens();
     String[] TokensGenerados = tokens.GenerarTokensAleatorios(16);
     static final int PUERTO=5555;
@@ -50,15 +51,13 @@ public class Servidor {
                     Ch1.ChallegeAVL(jugador,valor);
                 }
                 if (tree == "BST");{
-                    System.out.println("funciona");
+                    Ch2.BSTChallenge(jugador,valor);
                 }
                 if (tree == "Splay");{
-
                     Ch3.ChallegeSplay(jugador,valor);
 
                 }
-                if (tree == "B");{
-
+                if (tree == "BTree");{
                     System.out.println("funciona");
                 }
 
