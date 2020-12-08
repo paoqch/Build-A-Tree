@@ -35,7 +35,7 @@ public class Servidor {
                 System.out.println(available_cards[random_Tree_Order]+","+available_cards[random_Tree_Order2]+","+available_cards[random_Tree_Order3]);
 
                 flujo.writeUTF("|"+available_cards[random_Tree_Order]+","+available_cards[random_Tree_Order2]+","+available_cards[random_Tree_Order3]);
-                flujo.writeUTF( "|" + TokensGenerados);
+                //flujo.writeUTF( "|" + TokensGenerados);
 
                 InputStreamReader in = new InputStreamReader(socketCliente.getInputStream());
                 BufferedReader bf = new BufferedReader(in);
