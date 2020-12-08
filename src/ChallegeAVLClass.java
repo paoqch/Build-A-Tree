@@ -16,7 +16,7 @@ public class ChallegeAVLClass {
     public void ChallegeAVL( int jugador,int valor){
         switch (jugador){
             case 1:
-                if (count1==7){
+                if (count1==5){
                     J1.root = null;
                     System.out.println("#######  WIN  #######");
 
@@ -27,6 +27,8 @@ public class ChallegeAVLClass {
                     }else{
 
                         J1.root = J1.insert(J1.root,valor);
+                        System.out.println("Arbol J1");
+                        System.out.println("\n");
                         J1.prettyPrint();
                         System.out.println("\n");
                         J1.inOrder();
@@ -38,7 +40,7 @@ public class ChallegeAVLClass {
                 break;
 
             case 2:
-                if (count2==7){
+                if (count2==5){
                     J2.root = null;
                     System.out.println("#######  WIN  #######");
 
@@ -49,6 +51,8 @@ public class ChallegeAVLClass {
                     }else{
 
                         J2.root = J2.insert(J2.root,valor);
+                        System.out.println("Arbol J2");
+                        System.out.println("\n");
                         J2.prettyPrint();
                         System.out.println("\n");
                         J2.inOrder();
