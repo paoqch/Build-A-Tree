@@ -3,7 +3,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-//Server Timer class
+/***
+ * Server Timer class
+ */
 public class Timer {
     JFrame window;
     JLabel counterLabel;
@@ -11,7 +13,10 @@ public class Timer {
     javax.swing.Timer timer;
     int second, minute;
 
-    //Display method
+    /***Display method
+     * 
+     * @param args
+     */
     public static  void main(String[] args){
         new Timer();
     }
@@ -27,7 +32,10 @@ public class Timer {
         window.add(counterLabel);
         window.setVisible(true);
 
-        //Timer mode in minutes and seconds
+        
+        /***
+         * Timer mode in minutes and seconds
+         */        
         second = 0;
         minute = 0;
         normalTimer();
@@ -35,7 +43,9 @@ public class Timer {
         System.out.println("Timer Started");
     }
 
-    //Timer change from seconds to minutes
+    /***
+     * Timer change from seconds to minutes
+     */
     public void normalTimer(){
         timer = new javax.swing.Timer(1000, new ActionListener() {
             @Override
