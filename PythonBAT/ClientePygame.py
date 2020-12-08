@@ -70,7 +70,7 @@ def main():
 	TextColor = (74,48,111)
 	# JUGADOR 1 # ==========================================================================================================
 	Player1 = Player()
-	Conexion1("inicio")
+	Conexion1("AVL/1/0")
 	Player_Image = pygame.image.load(Player1.get_imagen())
 	P = pygame.image.load("ImagenesBAT/EstrellaBAT.png")
 	Player1.mostrar()
@@ -83,8 +83,6 @@ def main():
 
 	# JUGADOR 2 # ==========================================================================================================
 	Player2 = Player()
-	Conexion("H3")
-	Conexion("H3")
 	Player2_Image = pygame.image.load(Player2.get_imagen())
 	PP = pygame.image.load("ImagenesBAT/EstrellaBAT.png")
 	Player2.mostrar()
@@ -839,19 +837,19 @@ def main():
 			if contSoundtrack3==1:
 				UltimoOst[0]=True"""			
 
-		if Tiempo>80000:
+		if Tiempo>10000:
 			contChallenge+=1
 			ChallengeActual=Segundo
 			if contChallenge==1:
 				FinChallenge[0]=True
 
-		if Tiempo>160000:
+		if Tiempo>20000:
 			contChallenge2+=1
 			ChallengeActual=Ultimo
 			if contChallenge2==1:
 				FinChallenge[0]=True
 
-		if Tiempo>240000:
+		if Tiempo>30000:
 			contChallenge3+=1
 			if contChallenge3==1:
 				FinJuego[0]=True		

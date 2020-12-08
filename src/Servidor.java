@@ -34,35 +34,33 @@ public class Servidor {
                 System.out.println(available_cards[random_Tree_Order]+","+available_cards[random_Tree_Order2]+","+available_cards[random_Tree_Order3]);
 
                 flujo.writeUTF("|"+available_cards[random_Tree_Order]+","+available_cards[random_Tree_Order2]+","+available_cards[random_Tree_Order3]);
-                flujo.writeUTF( "|" + TokensGenerados);
+                //flujo.writeUTF( "|" + TokensGenerados);
 
                 InputStreamReader in = new InputStreamReader(socketCliente.getInputStream());
                 BufferedReader bf = new BufferedReader(in);
 
                 String str = bf.readLine();
                 System.out.println("client: "+ str);
+                int cont = 0;
                 String [] msg = str.split("/");
                 String tree = msg[0];
-                String[] msg2 = msg[1].split("/");
-                Integer jugador = Integer.parseInt(msg2[0]);
-                Integer valor = Integer.parseInt(msg2[1]) ;
 
-                switch(tree){
-                    case "AVL":
-                         Ch1.ChallegeAVL(jugador,valor);
-                        break;
+                Integer jugador = Integer.parseInt(msg[1]);
+                Integer valor = Integer.parseInt(msg[2]) ;
+                System.out.println(msg);
 
-                    case "BST":
-                        //Challege
-                        break;
 
-                    case"Splay":
-                        Ch3.ChallegeSplay(jugador,valor);
-                        break;
-
-                    case "B":
-                        //Challege
-                        break;
+                if (tree == "AVL");{
+                    Ch1.ChallegeAVL(jugador,valor);
+                    cont+=1;
+                    System.out.println("funciona");
+                    System.out.println(cont);
+                }
+                if (tree == "Splay");{
+                    cont+=2;
+                    Ch3.ChallegeSplay(jugador,valor);
+                    System.out.println("funciona");
+                    System.out.println(cont);
                 }
 
                 socketCliente.close();
