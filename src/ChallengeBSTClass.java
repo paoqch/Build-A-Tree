@@ -1,7 +1,7 @@
 /**
  * Clase para el challege arbol Binary Search Tree
  */
-public class BSTChallengeClass {
+public class ChallengeBSTClass {
     BinarySearchTree J1 = new BinarySearchTree();
     BinarySearchTree J2 = new BinarySearchTree();
     Integer count1 = 0;
@@ -13,7 +13,7 @@ public class BSTChallengeClass {
      * @param jugador jugador al que le pertenece el arbol
      * @param valor   Numero que desea insertar al arbol
      */
-    public void BSTChallengeClass(int jugador, int valor) {
+    public void ChallengeBSTClass(int jugador, int valor) {
         switch (jugador) {
             case 1:
                 if (count1 == 6) {
