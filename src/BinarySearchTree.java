@@ -14,11 +14,33 @@ public class BinarySearchTree {
 
     // Constructor
     BinarySearchTree() {
+
         root = null;
+    }
+    //Print tree method
+    private void printHelper(Node currPtr, String indent, boolean last) {
+        // print the tree structure on the screen
+        if (currPtr != null) {
+            System.out.print(indent);
+            if (last) {
+                System.out.print("R----");
+                indent += "     ";
+            } else {
+                System.out.print("L----");
+                indent += "|    ";
+            }
+
+            System.out.println(currPtr.key);
+
+            printHelper(currPtr.left, indent, false);
+            printHelper(currPtr.right, indent, true);
+        }
     }
 
     // deleteRec() call
-    void deleteKey(int key) { root = deleteRec(root, key); }
+    void deleteKey(int key) {
+        root = deleteRec(root, key);
+    }
 
     //Delete an existing key in BST
     Node deleteRec(Node root, int key) {
@@ -59,7 +81,10 @@ public class BinarySearchTree {
     }
 
     // insertRec() call
-    void insert(int key) { root = insertRec(root, key); }
+    Node insert(Node root, int key) {
+        this.root = insertRec(this.root, key);
+        return null;
+    }
 
     //Insert a new key in BST
     Node insertRec(Node root, int key)
@@ -91,22 +116,9 @@ public class BinarySearchTree {
             inorderRec(root.right);
         }
     }
-
-    public static void main(String[] args) {
-        BinarySearchTree tree = new BinarySearchTree();
-
-        tree.insert(50);
-        tree.insert(30);
-        tree.insert(20);
-        tree.insert(40);
-        tree.insert(70);
-        tree.insert(60);
-        tree.insert(80);
-
-        System.out.println("Inorder traversal of the given tree");
-        tree.inorder();
-        tree.root = null;
-        System.out.println("\nEnd");
-        
+    //printHelper method call
+    public void prettyPrint() {
+        printHelper(this.root, "", true);
     }
 }
+
