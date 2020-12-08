@@ -51,7 +51,7 @@ public class Servidor {
                     Ch1.ChallegeAVL(jugador,valor);
                 }
                 if (tree == "BST");{
-                    Ch2.BSTChallenge(jugador,valor);
+                    Ch2.ChallengeBST(jugador,valor);
                 }
                 if (tree == "Splay");{
                     Ch3.ChallegeSplay(jugador,valor);
