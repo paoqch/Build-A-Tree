@@ -134,27 +134,6 @@ public class SplayTree {
         }
     }
 
-    /**
-     * Metodo para unir 2 arboles
-     * @param s primer arbol
-     * @param t segundo arbol
-     * @return
-     */
-    private Node join(Node s, Node t){
-        if (s == null) {
-            return t;
-        }
-
-        if (t == null) {
-            return s;
-        }
-        Node x = maximum(s);
-        splay(x);
-        x.right = t;
-        t.parent = x;
-        return x;
-    }
-
 
     /**
      * Metodo auxiliar que se realiza el recorrido en Inorden para imprimirlo
@@ -178,20 +157,6 @@ public class SplayTree {
         inOrderHelper(this.root);
     }
 
-
-    /**
-     * Metodo para encontrar el nodo maximo
-     * @param node arbol
-     * @return nodo maximo
-     */
-    public Node maximum(Node node) {
-        while (node.right != null) {
-            node = node.right;
-        }
-        return node;
-    }
-
-    // insert the key to the tree in its appropriate position
 
     /**
      * Metodo de insercion de  la llave en el árbol en su posición apropiada
