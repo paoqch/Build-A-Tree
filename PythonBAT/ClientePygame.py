@@ -60,13 +60,16 @@ def main():
 	Mapa_Image = pygame.image.load("ImagenesBat/MapaBAT.png").convert()
 	ShieldIm = pygame.image.load("ImagenesBat/ShieldBAT.png")
 	P1Win_Image = pygame.image.load("ImagenesBAT/P1WinBAT.jpg") 
-	P2Win_Image = pygame.image.load("ImagenesBAT/P2WinBAT.jpg") 
+	P2Win_Image = pygame.image.load("ImagenesBAT/P2WinBAT.jpg")
+	Tie_Image = pygame.image.load("ImagenesBAT/TieBAT.jpg") 
 	TokenObtenido = pygame.mixer.Sound("SonidosBAT/TokensSoundBAT.mp3")
 	TokenIncorrecto = pygame.mixer.Sound("SonidosBAT/FalloSoundBAT.mp3")
 	Soundtrack1 = pygame.mixer.Sound("SonidosBAT/OST1SoundBAT.mp3")
 	Soundtrack2 = pygame.mixer.Sound("SonidosBAT/OST2SoundBAT.mp3")
 	Soundtrack3 = pygame.mixer.Sound("SonidosBAT/OST3SoundBAT.mp3")
 	PoderObtenido = pygame.mixer.Sound("SonidosBAT/EstrellaSoundBAT.mp3")
+	Caer = pygame.mixer.Sound("SonidosBAT/Wilhelm.wav")
+	Jump = pygame.mixer.Sound("SonidosBAT/Jump.wav")
 	font1 = pygame.font.SysFont("Britannic" , 30)
 	TextColor = (74,48,111)
 	# JUGADOR 1 # -------------------------------------------------------------------------------------------------------------
@@ -130,6 +133,7 @@ def main():
 	### BUCLE DE JUEGO ###======================================================================================================
 	while True: 
 		Challenge_Image = pygame.image.load("ImagenesBAT/"+ChallengeActual+"BAT.png") # indicador en pantalla del challenge actual
+		Challenge_Icon = pygame.image.load("ImagenesBAT/"+ChallengeActual+"iconBAT.png")
 		global PoderSaltoUsado # variable global que detecta si el jugador 1 ha usado el poder AirJump  
 		PoderSaltoUsado = [True]
 
@@ -213,6 +217,7 @@ def main():
 				TCaida.start()				
 		### Hilo que simula la animacion de subir, al utilizar el poder "AirJump" para el jugador 1 ### ==================================================
 		def Subida(P1,P2): # recibe la pocision x y y del jugador
+			Jump.play()
 			Player_Image2 = pygame.image.load(Player1.get_imagen()) # imagen secundaria
 			cont = P2
 			while cont>129: # condicion de parada, cuando se haya recorrido la distancia hacia arriba necesaria
@@ -228,6 +233,7 @@ def main():
 				Player1.set_PosX(505)
 		### Hilo que simula la animacion de subir, al utilizar el poder "AirJump" para el jugador 2 ### ==================================================
 		def Subida2(P1,P2):# recibe la pocision x y y del jugador
+			Jump.play()
 			Player2_Image2 = pygame.image.load(Player2.get_imagen())
 			cont = P2
 			while cont>129:
@@ -251,7 +257,7 @@ def main():
 				VentanaJuego.blit(Player_Image2,(P1,P2))		
 				pygame.time.wait(20)
 				if PoderSaltoUsado[0]==False: 
-					cont=630
+					cont=620
 			PoderSaltoUsado[0]=True				
 				
 			Player1.set_PosY(630)
@@ -824,7 +830,7 @@ def main():
 				ContadorPoder2 = 3	
 			IndicadorPoder2[0]=False
 		
-		"""if Tiempo>0:
+		if Tiempo>0:
 			contSoundtrack+=1
 			if contSoundtrack==1:
 				InicioOst[0]=True
@@ -832,10 +838,10 @@ def main():
 			contSoundtrack2+=1
 			if contSoundtrack2==1:
 				SiguienteOst[0]=True
-		if Tiempo>160000:
+		if Tiempo>157500:
 			contSoundtrack3+=1
 			if contSoundtrack3==1:
-				UltimoOst[0]=True"""			
+				UltimoOst[0]=True			
 		### CONTROL DE TIEMPOS, TRANSICIONES Y FIN DEL JUEGO ### ========================================================================
 		if Tiempo>80000: # 80 s
 			contChallenge+=1
@@ -864,12 +870,14 @@ def main():
 			FinChallenge[0]=False
 
 		if InicioOst[0]: #Activa primer sonido de fondo
-			Soundtrack1.play() 
+			Soundtrack1.play()
+			InicioOst[0]=False 
 		if SiguienteOst[0]:#Activa Segundo sonido de fondo
-			Soundtrack2.play()
+			Soundtrack3.play()
+			SiguienteOst[0]=False
 		if UltimoOst[0]:#Activa tercer sonido de fondo
-			Soundtrack3.play()		
-
+			Soundtrack2.play()		
+			UltimoOst[0]=False
 					
 		if Animation_Estrella[0]: # Activa el hilo de la estrella
 			Thread_Estrella = threading.Thread(target = Estrella, args = ())
@@ -880,24 +888,30 @@ def main():
 			Thread_Token = threading.Thread(target = Tokens, args = ())
 			Thread_Token.start()
 			Animation_Tokens[0]=False
-
-		if Player1.get_PosY()>=630: # Si el jugador 1 cae completamente al precipicio
-			Player1.set_PosY(43) # Reaparece
+		
+		if Player1.get_PosY()==630: # Si el jugador 1 cae completamente al precipicio
+			 # Reaparece
 			Player1.set_Cont(0)
 			Conexion(ChallengeActual+"/1/0")
 			Player1.ActualizarSprite()
+			Player1.ReinicioPuntos()
 			Player1.set_PosX(random.randint(160,440))
-			pygame.time.delay(1000)
+			Player1.set_PosY(43)
+			ContadorPoder = 0
+			#Caer.play()
 
-		if Player2.get_PosY()>=630: # Si el jugador 2 cae completamente al precipicio
-			Player2.set_PosY(43) # Reaparece
+		if Player2.get_PosY()==630: # Si el jugador 2 cae completamente al precipicio
+			 # Reaparece
 			Player2.set_Cont(0)
 			Conexion(ChallengeActual+"/2/0")
 			Player2.ActualizarSprite()
+			Player2.ReinicioPuntos()
 			Player2.set_PosX(random.randint(160,440))
-			pygame.time.delay(1000)	
+			Player2.set_PosY(43)
+			ContadorPoder2 = 0
+			#Caer.play()
 
-
+		#print(Player1.get_PosY())
 		VentanaJuego.blit(Mapa_Image,(0,0)) # imagen fondo
 		VentanaJuego.blit(Player_Image,(Player1.get_PosX(),Player1.get_PosY())) # imagen jugador 1
 
@@ -911,6 +925,7 @@ def main():
 			Escudo2 = pygame.image.load("ImagenesBAT/Shield0BAT.png") # La imagen de un escudo se mostrara alrededor del jugador 2
 			VentanaJuego.blit(Escudo2,(Player2.get_PosX()-15,Player2.get_PosY()))	
 		VentanaJuego.blit(Challenge_Image,(470,0))
+		VentanaJuego.blit(Challenge_Icon,(400,0))
 		VentanaJuego.blit(P,(60,2)) # Icono del poder actual del jugador 1
 		VentanaJuego.blit(PP,(200,2)) # Icono del poder actual del jugador 2
 		### LABELS Y TEXTO EN PANTALLA###==========================================================================================
@@ -940,7 +955,10 @@ def main():
 				VentanaJuego.blit(P2Win_Image,(100,115))
 				Player2_ImageWin=Player2_Image
 				Player2_ImageWin = pygame.transform.scale(Player2_ImageWin, (100, 150)) #Se muestra como ganador
-				VentanaJuego.blit(Player2_ImageWin,(225,300))	
+				VentanaJuego.blit(Player2_ImageWin,(225,300))
+
+			if Player1.get_PuntuacionT()==Player2.get_PuntuacionT():
+				VentanaJuego.blit(Tie_Image,(100,115))		
 		
 
 	
